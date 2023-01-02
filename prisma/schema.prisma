@@ -1,0 +1,100 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Book {
+  isbn        String @id @unique
+  name        String
+  author      String
+  description String
+
+  price     Float @default(0)
+  views     Int   @default(0)
+  type     Int
+  category BookType @relation(fields: [type], references: [id])
+
+  borrows Borrow[]
+  lib     BookLib[]
+  posts   Post[]
+  inventory Inventory?
+}
+
+model Inventory {
+  isbn String @id @unique
+  sums Int @default(0)
+  rest Int @default(0)
+  
+  book Book? @relation(fields: [isbn], references: [isbn])
+}
+
+model BookType {
+  id   Int    @id @unique @default(autoincrement())
+  name String
+
+  books Book[]
+}
+
+model BookLib {
+  id       Int    @id @default(autoincrement())
+  location String
+
+  isbn String
+  book Book?   @relation(fields: [isbn], references: [isbn])
+
+  status Boolean @default(true)
+  borrow Borrow?
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  hash     String
+  type     String
+
+  sex     String?
+  email   String  @unique
+
+  borrows Borrow[]
+  posts   Post[]
+  credit  Credit?  
+}
+
+model Credit {
+  userId Int @id @unique @map("user_id") 
+  credit Int @default(100)
+
+  User User? @relation(fields: [userId], references: [id])
+}
+
+model Borrow {
+  id         Int      @id @unique @default(autoincrement())
+  isbn       String
+  userId     Int      @map("user_id")
+  bookId     Int      @unique
+  borrowDate DateTime @default(now()) @map("borrow_date")
+  returnDate DateTime @map("return_date")
+  isReturn   Boolean  @default(false) @map("is_return")
+
+  user    User?    @relation(fields: [userId], references: [id])
+  book    Book?    @relation(fields: [isbn], references: [isbn])
+  bookLib BookLib? @relation(fields: [bookId], references: [id])
+}
+
+model Post {
+  id      Int     @id @unique @default(autoincrement())
+  content String
+  rate    Int
+  delete  Boolean @default(false)
+
+  isbn String
+  book Book   @relation(fields: [isbn], references: [isbn])
+
+  userId Int  @map("user_id")
+  user   User? @relation(fields: [userId], references: [id])
+}
+
