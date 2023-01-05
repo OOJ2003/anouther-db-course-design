@@ -76,7 +76,7 @@ function BookPage() {
 
   const [bookForm] = Form.useForm<Book>()
   const [newBookForm] = Form.useForm<Book>()
-  const [rateValue, setRateValue] = useState(2.5)
+  const [rateValue, setRateValue] = useState(3)
   const [rateText, setRateText] = useState("")
 
   const columns: ColumnsType<Book> = [
@@ -183,7 +183,6 @@ function BookPage() {
         }}
       >
         <Rate
-          allowHalf
           value={rateValue}
           onChange={(e) => setRateValue(e.valueOf())}
         />
