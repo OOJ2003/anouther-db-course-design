@@ -1,16 +1,37 @@
-"use client";
+"use client"
 
 import React from "react"
 import { LockOutlined, UserOutlined } from "@ant-design/icons"
 import { LoginFormPage, ProFormText } from "@ant-design/pro-components"
-import { Button, Divider } from "antd"
+import { Button, Divider, message } from "antd"
 import Link from "next/link"
 
-const handleLogin = async (username: string, password: string) => {
-  // todo
+const handleLogin = async (id: string, password: string) => {
+  fetch("/api/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: `{"id": ${id}, "password": "${password}"}`,
+  }).then((res) => {
+    console.log(res)
+    if (res.status === 200) {
+      res.json().then((data) => {
+        localStorage.setItem("type", data.type)
+        localStorage.setItem("id", data.id)
+        localStorage.setItem("username", data.username)
+        message.success("登录成功")
+        setTimeout(() => {
+          window.location.href = data.type === "admin" ? "/rootDashboard" : "/dashboard"
+        }, 1000)
+      })
+    } else {
+      message.error("用户名或密码错误")
+    }
+  })
 }
 
-function Home() {
+function Login() {
   return (
     <div
       style={{
@@ -102,4 +123,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Login

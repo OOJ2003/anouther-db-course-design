@@ -16,7 +16,7 @@ model Book {
   price     Float @default(0)
   views     Int   @default(0)
   type     Int
-  category BookType @relation(fields: [type], references: [id])
+  category BookType @relation(fields: [type], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   borrows Borrow[]
   lib     BookLib[]
@@ -29,7 +29,7 @@ model Inventory {
   sums Int @default(0)
   rest Int @default(0)
   
-  book Book? @relation(fields: [isbn], references: [isbn])
+  book Book? @relation(fields: [isbn], references: [isbn], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model BookType {
@@ -44,7 +44,7 @@ model BookLib {
   location String
 
   isbn String
-  book Book?   @relation(fields: [isbn], references: [isbn])
+  book Book?   @relation(fields: [isbn], references: [isbn], onDelete: NoAction, onUpdate: Cascade)
 
   status Boolean @default(true)
   borrow Borrow?
@@ -68,7 +68,7 @@ model Credit {
   userId Int @id @unique @map("user_id") 
   credit Int @default(100)
 
-  User User? @relation(fields: [userId], references: [id])
+  User User? @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Borrow {
@@ -80,9 +80,9 @@ model Borrow {
   returnDate DateTime @map("return_date")
   isReturn   Boolean  @default(false) @map("is_return")
 
-  user    User?    @relation(fields: [userId], references: [id])
-  book    Book?    @relation(fields: [isbn], references: [isbn])
-  bookLib BookLib? @relation(fields: [bookId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  book    Book    @relation(fields: [isbn], references: [isbn], onDelete: Cascade, onUpdate: Cascade)
+  bookLib BookLib @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Post {
@@ -92,9 +92,9 @@ model Post {
   delete  Boolean @default(false)
 
   isbn String
-  book Book   @relation(fields: [isbn], references: [isbn])
+  book Book   @relation(fields: [isbn], references: [isbn], onDelete: Cascade, onUpdate: Cascade)
 
   userId Int  @map("user_id")
-  user   User? @relation(fields: [userId], references: [id])
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 

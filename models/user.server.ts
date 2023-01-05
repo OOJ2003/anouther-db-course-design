@@ -70,8 +70,16 @@ export async function deleteUser(id: number) {
   })
 }
 
-export async function getUsers() {
-  return db.user.findMany()
+export async function getAllUsers() {
+  return db.user.findMany({
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      type: true,
+      sex: true,
+    },
+  })
 }
 
 export async function getUsersByName(name: string) {
@@ -80,6 +88,27 @@ export async function getUsersByName(name: string) {
       username: {
         contains: name,
       },
+    }, select: {
+      id: true,
+      username: true,
+      email: true,
+      type: true,
+      sex: true
+    }
+  })
+}
+
+export async function getUserById(id: number) {
+  return db.user.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      type: true,
+      sex: true,
     },
   })
 }

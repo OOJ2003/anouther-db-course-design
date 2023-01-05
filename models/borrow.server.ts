@@ -3,6 +3,14 @@ import db from "../utils/db"
 import invariant from "tiny-invariant"
 
 export async function borrowBook(userId: number, bookId: number) {
+  const credit = await db.credit.findUnique({
+    where: {
+      userId
+    }
+  })
+
+  invariant(credit != null && credit.credit > 0, "信用过低！")
+
   const book = await db.bookLib.findUnique({
     where: {
       id: bookId,
@@ -46,10 +54,23 @@ export async function borrowBook(userId: number, bookId: number) {
 
   return db.borrow.create({
     data: {
-      isbn: book.isbn,
-      userId,
-      bookId,
       returnDate,
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
+      book: {
+        connect: {
+          isbn: book.isbn,
+        },
+      },
+
+      bookLib: {
+        connect: {
+          id: bookId,
+        },
+      },
     },
   })
 
@@ -78,12 +99,11 @@ export async function borrowBook(userId: number, bookId: number) {
 }
 
 export async function returnBook(bookId: number) {
-  const borrow = await db.borrow.findUnique({
+  const borrow = (await db.borrow.findMany({
     where: {
       bookId,
     },
-  })
-
+  }))![0]
   invariant(borrow, "图书不存在！")
 
   const now = new Date()
@@ -111,7 +131,7 @@ export async function returnBook(bookId: number) {
     },
   })
 
-  await db.bookLib.update({
+  await db.bookLib.updateMany({
     where: {
       id: bookId,
     },
@@ -120,7 +140,7 @@ export async function returnBook(bookId: number) {
     },
   })
 
-  return db.borrow.update({
+  return db.borrow.updateMany({
     where: {
       bookId,
     },
