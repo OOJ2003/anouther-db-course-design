@@ -43,7 +43,7 @@ function Login() {
       <LoginFormPage
         backgroundImageUrl="https://gw.alipayobjects.com/zos/rmsportal/FfdJeJRQWjEeGTpqgBKj.png"
         title="图书管理借阅系统"
-        subTitle="数据库大作业：by程晖-李铭轩-王书羊"
+        subTitle="数据库大作业"
         onFinish={async (e) => handleLogin(e.username, e.password)}
         activityConfig={{
           style: {
